@@ -10,17 +10,20 @@ class State:
 
 
 def draw():
-    return (-1) ** random.randint(0, 2) * random.randint(1, 10)
+    temp = random.randint(0, 2)
+    if temp == 0:
+        return -random.randint(1, 10)
+    else:
+        return random.randint(1, 10)
 
 
 def step(state, action):
     """
-
     :param state: the current state
-    :param action: True for stick and False for hit
+    :param action: 1 for stick and 0 for hit
     :return: the next state and the reward
     """
-    if action:
+    if action == 1:
         while state.dealer <= 16:
             state.dealer += draw()
             if state.dealer < 1:
@@ -29,7 +32,12 @@ def step(state, action):
             if state.dealer > 21:
                 state.dealer = 22
                 return state, 1
-        reward = 1 if state.dealer < state.player else 0 if state.dealer == state.player else -1
+        if state.dealer < state.player:
+            reward = 1
+        elif state.dealer == state.player:
+            reward = 0
+        else:
+            reward = -1
         return state, reward
     else:
         state.player += draw()
