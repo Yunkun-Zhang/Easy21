@@ -2,39 +2,53 @@
 
 from state import *
 import QLearning as Q
+import PolicyIteration as PI
 
 
-def game():
+def game(strategy):
     s = State()
-    d = s.dealer - 1
+    s.initilize()
     while 1 <= s.dealer <= 10 and 1 <= s.player <= 21:
-        st = 21 * d + s.player - 1
-        action = 0 if Q.QTable[st][1] < Q.QTable[st][0] else 1
+        if strategy == "ql":
+            d = s.dealer - 1
+            st = 21 * d + s.player - 1
+            action = 0 if Q.QTable[st][1] < Q.QTable[st][0] else 1
+        elif strategy == "rand":
+            action = random.randint(0, 1)
+        elif strategy == "pi":
+            action = PI.PolicyTable[s.player - 1][s.dealer - 1]
         next_state, reward = step(s, action)
         if reward == 1:
             return 1
-    return 0
-
-
-def game2():
-    s = State()
-    while 1 <= s.dealer <= 10 and 1 <= s.player <= 21:
-        action = random.randint(0, 1)
-        next_state, reward = step(s, action)
-        if reward == 1:
-            return 1
+        elif reward == -1:
+            return -1
     return 0
 
 
 if __name__ == '__main__':
-    res = 0
-    for i in range(1000):
-        res += game()
-    print(res)
-    res = 0
-    for i in range(1000):
-        res += game2()
-    print(res)
+    Stategy_dict = {"RANDOM": 'rand', "Q-Learning": 'ql', "Policy Iteration": "pi"}
+    round = int(input("\nEnter the rounds you want to play: "))
+    print("")
+
+    for key in Stategy_dict:
+        print("Playing with strategy: ", key)
+        win = 0
+        draw = 0
+        lose = 0
+        for i in range(round):
+            res = game(Stategy_dict[key])
+            if res == 1:
+                win += 1
+            elif res == 0:
+                draw += 1
+            else:
+                lose += 1
+        print("------Statistics for strategy: ", key, "------ ")
+        print("WIN: ", win, " ", float(win * 100) / round, "%")
+        print("DRAW: ", draw, " ", float(draw * 100) / round, "%")
+        print("LOSE: ", lose, " ", float(lose * 100) / round, "%")
+        print("")
+
     '''
     print('Game started!')
     s = State()
@@ -61,4 +75,3 @@ if __name__ == '__main__':
             print('Game over. You lose!')
             break
     '''
-

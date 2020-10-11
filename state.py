@@ -4,9 +4,12 @@ import random
 
 
 class State:
-    def __init__(self):
-        self.dealer = random.randint(1, 10)
-        self.player = random.randint(1, 10)
+    def __init__(self,d=0,p=0):
+        self.dealer = d
+        self.player = p
+    def initilize(self):
+        self.dealer = random.randint(1,10)
+        self.player = random.randint(1,10)
 
 
 def draw():
