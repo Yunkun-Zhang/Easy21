@@ -3,6 +3,10 @@
 import numpy as np
 from tqdm import tqdm
 import copy
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import axes3d
+
+print("Initializing policy iteration...")
 
 posi_poss = 2 / float(30)
 neg_poss = 1 / float(30)
@@ -83,11 +87,24 @@ def policy_improvement_update():
             PolicyTable[i][j] = 0 if tmpvalue_0 > tmpvalue_1 else 1
 
 
-print("Training in policy iteration ......")
+print("Training in policy iteration...")
 for i in range(epoch_policy_update):
     for j in range(epoch_policy_eval):
         policy_eval_update()
     policy_improvement_update()
+print("Success!")
+
 
 if __name__ == "__main__":
-    print(PolicyTable)
+    #print(PolicyTable)
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    x = np.array([list(range(1, 11)) for _ in range(11, 22)])
+    y = np.array([[i] * 10 for i in range(11, 22)])
+    z = np.array([[ValueTable[j][i] for i in range(10)] for j in range(10, 21)])
+    ax.plot_wireframe(x, y, z, rstride=1, cstride=1)
+    plt.xticks(list(range(1, 11)))
+    ax.set_xlabel('Dealer showing')
+    plt.yticks(list(range(11, 22)))
+    ax.set_ylabel('Player sum')
+    plt.show()

@@ -7,12 +7,12 @@ import PolicyIteration as PI
 
 def game(strategy):
     s = State()
-    s.initilize()
+    s.initialize()
     while 1 <= s.dealer <= 10 and 1 <= s.player <= 21:
         if strategy == "ql":
             d = s.dealer - 1
-            st = 21 * d + s.player - 1
-            action = 0 if Q.QTable[st][1] < Q.QTable[st][0] else 1
+            p = s.player - 1
+            action = 0 if Q.QTable[d][p][1] < Q.QTable[d][p][0] else 1
         elif strategy == "rand":
             action = random.randint(0, 1)
         elif strategy == "pi":
@@ -31,7 +31,7 @@ if __name__ == '__main__':
     print("")
 
     for key in Stategy_dict:
-        print("Playing with strategy: ", key)
+        print("Playing with strategy:", key)
         win = 0
         draw = 0
         lose = 0
@@ -43,13 +43,14 @@ if __name__ == '__main__':
                 draw += 1
             else:
                 lose += 1
-        print("------Statistics for strategy: ", key, "------ ")
+        print("------ Statistics for strategy:", key, "------")
         print("WIN: ", win, " ", float(win * 100) / round, "%")
         print("DRAW: ", draw, " ", float(draw * 100) / round, "%")
         print("LOSE: ", lose, " ", float(lose * 100) / round, "%")
         print("")
 
     '''
+    # play the game yourself!
     print('Game started!')
     s = State()
     print(f'The dealer\'s card is {s.dealer}.')
@@ -75,3 +76,4 @@ if __name__ == '__main__':
             print('Game over. You lose!')
             break
     '''
+

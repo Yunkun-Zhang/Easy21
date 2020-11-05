@@ -4,20 +4,17 @@ import random
 
 
 class State:
-    def __init__(self,d=0,p=0):
+    def __init__(self, d=0, p=0):
         self.dealer = d
         self.player = p
-    def initilize(self):
-        self.dealer = random.randint(1,10)
-        self.player = random.randint(1,10)
+
+    def initialize(self):
+        self.dealer = random.randint(1, 10)
+        self.player = random.randint(1, 10)
 
 
 def draw():
-    temp = random.randint(0, 2)
-    if temp == 0:
-        return -random.randint(1, 10)
-    else:
-        return random.randint(1, 10)
+    return (-1) ** random.randint(0, 2) * random.randint(1, 10)
 
 
 def step(state, action):
