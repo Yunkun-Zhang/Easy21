@@ -44,9 +44,9 @@ if __name__ == '__main__':
             else:
                 lose += 1
         print("------ Statistics for strategy:", key, "------")
-        print("WIN: ", win, " ", float(win * 100) / round, "%")
-        print("DRAW: ", draw, " ", float(draw * 100) / round, "%")
-        print("LOSE: ", lose, " ", float(lose * 100) / round, "%")
+        print(f"WIN:\t{win}  \t{float(win * 100) / round}%")
+        print(f"DRAW:\t{draw}  \t{float(draw * 100) / round}%")
+        print(f"LOSE:\t{lose}  \t{float(lose * 100) / round}%")
         print("")
 
     '''

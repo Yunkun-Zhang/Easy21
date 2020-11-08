@@ -1,12 +1,13 @@
 # Training in Policy Iteration
 
 import numpy as np
-from tqdm import tqdm
 import copy
+from state import *
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import axes3d
+import time
 
 print("Initializing policy iteration...")
+start = time.clock()
 
 posi_poss = 2 / float(30)
 neg_poss = 1 / float(30)
@@ -23,24 +24,17 @@ ValueTable = np.zeros((21, 10))
 ValueTable_after_stick = np.zeros((21, 21))
 for i in range(21):
     for j in range(15, 21):
-        if i > j:
-            ValueTable_after_stick[i][j] = 1
-        elif i == j:
-            ValueTable_after_stick[i][j] = 0
-        else:
-            ValueTable_after_stick[i][j] = -1
+        ValueTable_after_stick[i][j] = 1 if i > j else 0 if i == j else -1
+
 for epoch in range(epoch_value_iteration_for_stick):
     tmpvaluetable = copy.deepcopy(ValueTable_after_stick)
     for i in range(21):
         for j in range(15):
             tmpvalue = 0
-            bust_poss = 0
             for t in range(-10, 11):
-                if t == 0: continue
-                if t < 0:
-                    poss = neg_poss
-                else:
-                    poss = posi_poss
+                if t == 0:
+                    continue
+                poss = neg_poss if t < 0 else posi_poss
                 if j + t < 0 or j + t > 20:
                     tmpvalue += poss * 1
                 else:
@@ -87,24 +81,42 @@ def policy_improvement_update():
             PolicyTable[i][j] = 0 if tmpvalue_0 > tmpvalue_1 else 1
 
 
+def test():
+    s = State()
+    s.initialize()
+    while 1 <= s.dealer <= 10 and 1 <= s.player <= 21:
+        action = PolicyTable[s.player - 1][s.dealer - 1]
+        next_state, reward = step(s, action)
+        if reward == 1:
+            return 1
+        elif reward == -1:
+            return -1
+    return 0
+
+
 print("Training in policy iteration...")
+reward_data = []
+r = 0
+for _ in range(10000):
+    r += test()
+reward_data.append(r/10000.0)
 for i in range(epoch_policy_update):
     for j in range(epoch_policy_eval):
         policy_eval_update()
     policy_improvement_update()
+    """ test
+    r = 0
+    for _ in range(10000):
+        r += test()
+    reward_data.append(r/10000.0)
+    """
 print("Success!")
+print(f"Time used: {time.clock() - start}s")
 
 
 if __name__ == "__main__":
-    #print(PolicyTable)
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    x = np.array([list(range(1, 11)) for _ in range(11, 22)])
-    y = np.array([[i] * 10 for i in range(11, 22)])
-    z = np.array([[ValueTable[j][i] for i in range(10)] for j in range(10, 21)])
-    ax.plot_wireframe(x, y, z, rstride=1, cstride=1)
-    plt.xticks(list(range(1, 11)))
-    ax.set_xlabel('Dealer showing')
-    plt.yticks(list(range(11, 22)))
-    ax.set_ylabel('Player sum')
-    plt.show()
+    plt.xlabel('iter number')
+    plt.ylabel('avg reward')
+    plt.plot(reward_data)
+    # plt.show()
+    plt.savefig(f'storage/re_epe_{epoch_policy_eval}_epu_{epoch_policy_update}.png')
