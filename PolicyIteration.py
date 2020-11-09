@@ -2,26 +2,24 @@
 
 import numpy as np
 import copy
-from state import *
-import matplotlib.pyplot as plt
 import time
 
-print("Initializing policy iteration...")
-start = time.clock()
-
-posi_poss = 2 / float(30)
-neg_poss = 1 / float(30)
-
+# 参数
 epoch_policy_eval = 100  # 策略评估迭代轮数
 epoch_policy_update = 20  # 策略优化迭代轮数
 epoch_value_iteration_for_stick = 2000  # 计算玩家停牌后的状态的迭代轮数
 
+# 初始化
+posi_poss = 2 / 30.0  # 正数牌的概率
+neg_poss = 1 / 30.0  # 负数牌的概率
 PolicyTable = np.random.randint(0, 2, (21, 10))  # 随机初始化策略矩阵
-
 ValueTable = np.zeros((21, 10))
+ValueTable_after_stick = np.zeros((21, 21))
+
+print("Initializing policy iteration...")
+start = time.clock()
 
 # 对玩家停止拿牌后的状态使用策略迭代方法（庄家视角）确定期望收益
-ValueTable_after_stick = np.zeros((21, 21))
 for i in range(21):
     for j in range(15, 21):
         ValueTable_after_stick[i][j] = 1 if i > j else 0 if i == j else -1
@@ -81,42 +79,15 @@ def policy_improvement_update():
             PolicyTable[i][j] = 0 if tmpvalue_0 > tmpvalue_1 else 1
 
 
-def test():
-    s = State()
-    s.initialize()
-    while 1 <= s.dealer <= 10 and 1 <= s.player <= 21:
-        action = PolicyTable[s.player - 1][s.dealer - 1]
-        next_state, reward = step(s, action)
-        if reward == 1:
-            return 1
-        elif reward == -1:
-            return -1
-    return 0
-
-
+# 学习
 print("Training in policy iteration...")
-reward_data = []
-r = 0
-for _ in range(10000):
-    r += test()
-reward_data.append(r/10000.0)
 for i in range(epoch_policy_update):
     for j in range(epoch_policy_eval):
         policy_eval_update()
     policy_improvement_update()
-    """ test
-    r = 0
-    for _ in range(10000):
-        r += test()
-    reward_data.append(r/10000.0)
-    """
 print("Success!")
-print(f"Time used: {time.clock() - start}s")
+print(f"Time used: {time.clock() - start:.4f}s")
 
 
 if __name__ == "__main__":
-    plt.xlabel('iter number')
-    plt.ylabel('avg reward')
-    plt.plot(reward_data)
-    # plt.show()
-    plt.savefig(f'storage/re_epe_{epoch_policy_eval}_epu_{epoch_policy_update}.png')
+    print(PolicyTable)

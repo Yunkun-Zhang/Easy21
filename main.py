@@ -26,30 +26,28 @@ def game(strategy):
 
 
 if __name__ == '__main__':
-    Stategy_dict = {"RANDOM": 'rand', "Q-Learning": 'ql', "Policy Iteration": "pi"}
+    strategy_dict = {"RANDOM": 'rand', "Q-Learning": 'ql', "Policy Iteration": 'pi'}
     round = int(input("\nEnter the rounds you want to play: "))
     print("")
 
-    for key in Stategy_dict:
+    for key in strategy_dict:
         print("Playing with strategy:", key)
-        win = 0
-        draw = 0
-        lose = 0
+        win = draw = lose = 0
         for i in range(round):
-            res = game(Stategy_dict[key])
+            res = game(strategy_dict[key])
             if res == 1:
                 win += 1
             elif res == 0:
                 draw += 1
             else:
                 lose += 1
-        print("------ Statistics for strategy:", key, "------")
+        print(f"------ Statistics for strategy: {key} ------")
         print(f"WIN:\t{win}  \t{float(win * 100) / round}%")
         print(f"DRAW:\t{draw}  \t{float(draw * 100) / round}%")
         print(f"LOSE:\t{lose}  \t{float(lose * 100) / round}%")
         print("")
 
-    '''
+    """
     # play the game yourself!
     print('Game started!')
     s = State()
@@ -75,5 +73,4 @@ if __name__ == '__main__':
                 print(f'Your point is {s.player}, and the dealer\'s is {s.dealer}.')
             print('Game over. You lose!')
             break
-    '''
-
+    """

@@ -6,10 +6,15 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import axes3d
 import time
 
-QTable = np.zeros((10, 21, 2))  # 21*10状态、2种行动
+# 参数
 alpha = 0.5  # 初始化学习率
 epsilon = 1  # 初始化随机游走概率
+min_alpha = 0.004  # 最小学习率
+min_epsilon = 0.1  # 最小随机游走概率
 update_turn = 1000000  # 更新轮数
+
+# 初始化
+QTable = np.zeros((10, 21, 2))  # 21*10状态、2种行动
 
 
 def update(state, a, e):
@@ -44,6 +49,7 @@ def test():
     return 0
 
 
+# 学习
 print("Training in Q-learning...")
 start = time.clock()
 reward_data = []
@@ -59,10 +65,10 @@ for i in range(update_turn):
             r += test()
         reward_data.append(r/10000.0)
     """
-    epsilon = epsilon * 0.999 if epsilon > 0.1 else 0.1  # 每轮降低随机游走的概率 (0.1)
-    alpha = alpha * 0.99 if alpha > 0.004 else 0.004  # (0.0039)
+    epsilon = epsilon * 0.999 if epsilon > min_epsilon else min_epsilon
+    alpha = alpha * 0.99 if alpha > min_alpha else min_alpha
 print("Success!")
-print(f'Time used: {time.clock() - start}s')
+print(f'Time used: {time.clock() - start:.4f}s')
 
 
 def plot():
@@ -72,28 +78,26 @@ def plot():
     y = np.array([[i] * 10 for i in range(11, 22)])
     z = np.array([[max(QTable[i][j]) for i in range(10)] for j in range(10, 21)])
     ax.plot_wireframe(x, y, z, rstride=1, cstride=1)
-    plt.title(f'Value-state')
+    plt.title(f'Value-state of Q-learning')
     plt.xticks(list(range(1, 11)))
     ax.set_xlabel('Dealer showing')
     plt.yticks(list(range(11, 22)))
     ax.set_ylabel('Player sum')
-    ax.set_zlabel('Value of state')
+    ax.set_zlabel('Value')
     # plt.show()
     plt.savefig(f'sv_a_{alpha}_e_{epsilon}_t_{update_turn}.png')
     plt.close()
 
-    plt.subplot(111)
-    x = [i * freq for i in range(update_turn // freq)]
-    plt.xlabel('update turn')
-    plt.ylabel('avg reward')
-    plt.plot(x, reward_data)
-    # plt.show()
-    plt.savefig(f're_a_{alpha}_e_{epsilon}_t_{update_turn}.png')
+    if reward_data:
+        plt.subplot(111)
+        x = [i * freq for i in range(update_turn // freq)]
+        plt.xlabel('Update turn')
+        plt.ylabel('Avg reward')
+        plt.plot(x, reward_data)
+        plt.show()
+        plt.savefig(f're_a_{alpha}_e_{epsilon}_t_{update_turn}.png')
 
 
 if __name__ == '__main__':
-    with open(f'storage/re_a_{alpha}_e_{epsilon}_t_{update_turn}.txt', 'w') as f:
-        for i in reward_data:
-            f.write(f'{i} ')
     print(QTable)
     # plot()
